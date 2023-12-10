@@ -42,7 +42,6 @@ def create_video(tirada):
     cv2.destroyAllWindows()
 
 
-# for i in range(1,5):
-#     create_video(i)
+for i in range(1,5):
+    create_video(i)
 
-create_video(4)
