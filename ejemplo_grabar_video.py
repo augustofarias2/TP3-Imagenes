@@ -11,15 +11,15 @@ def filtered(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # Definir el rango de colores rojos en HSV
-    lower_red = np.array([0, 160, 80])
-    upper_red = np.array([5, 255, 255])
+    lower_red = np.array([0, 100, 20])
+    upper_red = np.array([8, 255, 255])
 
     # Crear una máscara para los píxeles rojos
     mask1 = cv2.inRange(hsv, lower_red, upper_red)
 
     # Definir otro rango de colores rojos en HSV
-    lower_red = np.array([160, 160, 80])
-    upper_red = np.array([240, 255, 255])
+    lower_red = np.array([175, 100, 20])
+    upper_red = np.array([179, 255, 255])
 
     # Crear una máscara para los píxeles rojos en el rango 2
     mask2 = cv2.inRange(hsv, lower_red, upper_red)
@@ -33,12 +33,13 @@ def filtered(frame):
     img_gray = cv2.cvtColor(result, cv2.COLOR_RGB2GRAY)
     img_filtered = cv2.medianBlur(img_gray, 7)
     se = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
-    #binary_img = cv2.morphologyEx(img_filtered, cv2.MORPH_OPEN, se)   # Apertura para remover elementos pequeños
-    binary_img = cv2.morphologyEx(img_filtered, cv2.MORPH_CLOSE, se)  # Clausura para rellenar huecos.
+    binary_img = cv2.morphologyEx(img_filtered, cv2.MORPH_OPEN, se)   # Apertura para remover elementos pequeños
+    binary_img = cv2.morphologyEx(binary_img, cv2.MORPH_CLOSE, se)  # Clausura para rellenar huecos.
     img_canny_CV2 = cv2.Canny(img_filtered, 30, 90)
-    return img_filtered
+    
+    return binary_img
 
-def detectar_dado(img):
+def detectar_dado(img, num_labels, labels, stats, centroids):
     labeled_shapes = np.zeros_like(img)
     RHO_TH = 0.8    # Factor de forma (rho)
     AREA_TH = 500   # Umbral de area
@@ -90,8 +91,10 @@ while (cap.isOpened()):
 
         num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(img_filtered)
         
-        if num_labels == 6:
-            detectar_dado(img_filtered)
+        print(num_labels)
+
+        if num_labels > 12:
+            detectar_dado(img_filtered, num_labels, labels, stats, centroids)
             flag+=1
 
         if flag == 12:
@@ -99,6 +102,8 @@ while (cap.isOpened()):
             final_labels = labels
             final_stats = stats
             final_num_labels = num_labels
+
+        # print(num_labels)
 
         out.write(img_filtered)
         # --- Procesamiento ---------------------------------------------
@@ -121,34 +126,34 @@ cv2.destroyAllWindows()
 
 
 
-# # --- Defino parametros para la clasificación -------------------------------------------
-# # RHO_TH = 0.8	# Factor de forma (rho), si es circulo el valor es mayor a 0.8
-# AREA_TH = 5000   # Umbral de area para descartar los labels que no sean figuras
-# aux = np.zeros_like(final_labels)
-# labeled_image = cv2.merge([aux, aux, aux])
+# --- Defino parametros para la clasificación -------------------------------------------
+# RHO_TH = 0.8	# Factor de forma (rho), si es circulo el valor es mayor a 0.8
+AREA_TH = 5000   # Umbral de area para descartar los labels que no sean figuras
+aux = np.zeros_like(final_labels)
+labeled_image = cv2.merge([aux, aux, aux])
 
-# # --- Clasificación ---------------------------------------------------------------------
-# # Clasifico en base al factor de forma
-# for i in range(1, final_num_labels):
+# --- Clasificación ---------------------------------------------------------------------
+# Clasifico en base al factor de forma
+for i in range(1, final_num_labels):
 
-#     # # --- Remuevo celulas con area chica --------------------------------------
-#     # if (stats[i, cv2.CC_STAT_AREA] < AREA_TH):
-#     #     continue
+    # # --- Remuevo celulas con area chica --------------------------------------
+    # if (stats[i, cv2.CC_STAT_AREA] < AREA_TH):
+    #     continue
 
-#     # --- Selecciono el objeto actual -----------------------------------------
-#     obj = (labels == i).astype(np.uint8)
+    # --- Selecciono el objeto actual -----------------------------------------
+    obj = (labels == i).astype(np.uint8)
 
-#     # --- Calculo Rho ---------------------------------------------------------
-#     # ext_contours, _ = cv2.findContours(obj, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-#     # area = cv2.contourArea(ext_contours[0])
-#     # perimeter = cv2.arcLength(ext_contours[0], True)
-#     # rho = 4 * np.pi * area/(perimeter**2)
-#     # flag_circular = rho > RHO_TH
+    # --- Calculo Rho ---------------------------------------------------------
+    # ext_contours, _ = cv2.findContours(obj, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # area = cv2.contourArea(ext_contours[0])
+    # perimeter = cv2.arcLength(ext_contours[0], True)
+    # rho = 4 * np.pi * area/(perimeter**2)
+    # flag_circular = rho > RHO_TH
 
-#     # --- Clasifico -----------------------------------------------------------
-#     if final_stats[i, cv2.CC_STAT_AREA] < AREA_TH:
-#         labeled_image[obj == 1, 2] = 255
-#     else:
-#         labeled_image[obj == 1, 1] = 255
+    # --- Clasifico -----------------------------------------------------------
+    if final_stats[i, cv2.CC_STAT_AREA] < AREA_TH:
+        labeled_image[obj == 1, 2] = 255
+    else:
+        labeled_image[obj == 1, 1] = 255
     
-# plt.imshow(labeled_image, cmap="gray"); plt.show(block=False)
+plt.imshow(labeled_image, cmap="gray"); plt.show(block=False)
