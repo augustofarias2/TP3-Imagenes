@@ -8,7 +8,6 @@ def detectar_dado(frame, num_labels, labels, stats, centroids):
     aux = np.zeros_like(labels)
     labeled_image = cv2.merge([aux, aux, aux])
     # Clasifico en base al factor de forma
-    holes=[]
     for i in range(1, num_labels):
 
         # --- Remuevo celulas con area chica --------------------------------------
