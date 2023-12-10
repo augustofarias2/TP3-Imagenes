@@ -2,10 +2,6 @@ import cv2
 import numpy as np
 
 def filtered(frame):
-    img_gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-    img_filtered = cv2.medianBlur(img_gray, 9)
-    img_canny_CV2 = cv2.Canny(img_filtered, 30, 90)
-
     # Convertir el frame de BGR a HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -34,6 +30,5 @@ def filtered(frame):
     se = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     binary_img = cv2.morphologyEx(img_filtered, cv2.MORPH_OPEN, se)   # Apertura para remover elementos pequeños
     binary_img = cv2.morphologyEx(binary_img, cv2.MORPH_CLOSE, se)  # Clausura para rellenar huecos.
-    img_canny_CV2 = cv2.Canny(img_filtered, 30, 90)
     
     return binary_img
