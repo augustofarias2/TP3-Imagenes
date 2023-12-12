@@ -27,6 +27,7 @@ def filtered(frame):
 
     img_gray = cv2.cvtColor(result, cv2.COLOR_RGB2GRAY)
     img_filtered = cv2.medianBlur(img_gray, 7)
+    # agregar binarizado
     se = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     binary_img = cv2.morphologyEx(img_filtered, cv2.MORPH_OPEN, se)   # Apertura para remover elementos pequeños
     binary_img = cv2.morphologyEx(binary_img, cv2.MORPH_CLOSE, se)  # Clausura para rellenar huecos.

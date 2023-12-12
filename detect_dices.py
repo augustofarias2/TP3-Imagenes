@@ -1,6 +1,10 @@
 import cv2
 import numpy as np
 
+def circulars(contours): #Completar función para detectar agujeros circulares
+    holes = 0
+    return holes
+
 def detectar_dado(frame, num_labels, labels, stats, centroids):
     labeled_shape = np.zeros_like(frame)
     RHO_TH = 0.8    # Factor de forma (rho)
@@ -30,12 +34,12 @@ def detectar_dado(frame, num_labels, labels, stats, centroids):
         if flag_cuadrado:
             # --- Calculo cantidad de puntos ------------------------------------------
             all_contours, _ = cv2.findContours(obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            hole = len(all_contours) - 1
-            if hole != 0:
+            holes = circulars(all_countours) 
+            if holes != 0:
                 # --- Dibujo el bounding box ---------------------------------------------
                 x, y, w, h = stats[i, cv2.CC_STAT_LEFT], stats[i, cv2.CC_STAT_TOP], stats[i, cv2.CC_STAT_WIDTH], stats[i, cv2.CC_STAT_HEIGHT]
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 4)
                 # --- Dibujo el label ----------------------------------------------------
-                cv2.putText(frame, f"{hole}", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(frame, f"{holes}", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2, cv2.LINE_AA)
     
     return frame
