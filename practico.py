@@ -49,7 +49,7 @@ def create_video(tirada):
             img_filtered_show = cv2.resize(img_filtered, dsize=(int(width/3), int(height/3)))
             frame_show = cv2.resize(frame, dsize=(int(width/3), int(height/3)))
             # Mostrar el resultado
-            cv2.imshow(f'Analisis de Dados Video {tirada}', img_filtered_show) # Usar img_filtered_show para ver el filtrado y frame_show para ver el resultado final
+            cv2.imshow(f'Analisis de Dados Video {tirada}', frame_show) # Usar img_filtered_show para ver el filtrado y frame_show para ver el resultado final
                     # ---------------------------------------------------------------
             out.write(frame)
             if cv2.waitKey(25) & 0xFF == ord('q'):
@@ -63,7 +63,5 @@ def create_video(tirada):
     cv2.destroyAllWindows()
 
 
-# for i in range(1, 5):
-#     create_video(i)
-
-create_video(6)
+for i in range(1, 7):
+    create_video(i)
