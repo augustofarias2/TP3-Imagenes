@@ -1,9 +1,27 @@
 import cv2
 import numpy as np
 
-def circulars(contours): #Completar función para detectar agujeros circulares
+
+def circulars(contours,fp_threshold=12.57): #Completar función para detectar agujeros circulares
     holes = 0
+    
+    for contour in contours:
+        # Calcula el área del contorno
+        contour_area = cv2.contourArea(contour)
+
+        # Calcula el perímetro del contorno
+        contour_perimeter = cv2.arcLength(contour, True)
+
+        # Calcula el Factor de Forma (Fp)
+        fp = contour_area / contour_perimeter**2
+
+        # Si el Fp es cercano al valor invertido 1/Fp (12.57), consideramos que es un círculo
+        #(ver si ajustar 0.5 menor o mayor la tolerancia que se puede considerar para clasificarlo como circulo)
+        if abs(1 / fp - fp_threshold) < 0.5:
+            holes += 1
+
     return holes
+   
 
 def detectar_dado(frame, num_labels, labels, stats, centroids):
     labeled_shape = np.zeros_like(frame)
